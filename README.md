@@ -39,8 +39,8 @@ affichée (« reeduc → réadaptation »). Un mot d'au moins quatre lettres vau
 début de terme, les pluriels et les traits d'union sont tolérés
 (`psychocorporelle`, `orthèses`), les petits mots (de, du, la, à…) ignorés.
 
-Le dictionnaire est un fichier texte, `synonymes_csar.txt`, une entrée par
-ligne :
+Le dictionnaire est un fichier texte, `smr/synonymes/synonymes_csar.txt`, une
+entrée par ligne :
 
 ```
 rééducation, réhabilitation = réadaptation | entrainement
@@ -129,7 +129,7 @@ clic sur l'étoile pendant la session.
 
 **Aucune saisie perdue** : la recherche en cours, les filtres, les composeurs
 de zone d'acte et le panier vivent dans un magasin de session découplé des
-widgets (`smr_etat.py`). On peut aller consulter les Références et revenir :
+widgets (`smr/etat.py`). On peut aller consulter les Références et revenir :
 tout est là. C'est la fondation du futur générateur de GME.
 
 **Recherche d'un code CIM-10** (page « Séjour & valorisation ») : le
@@ -267,23 +267,29 @@ python3 -m venv .venv
 ## Organisation du projet
 
 ```
-SMR/
-├── app.py               coquille Streamlit : navigation et pages de recherche
-├── fiches.py            fiches d'acte et composeurs de zone d'acte
-├── panier.py            panier d'actes : contrôles, pondérations, scores
-├── favoris.py           favoris : étoile des fiches, page Favoris, stockage
-├── groupage.py          morbidité → catégorie majeure → groupe nosologique
-├── valorisation.py      GMT et valorisation d'un séjour
-├── references.py        référentiels, arborescences, règles de codage
-├── smr_etat.py          magasin de session : la saisie survit à la navigation
-├── smr_data.py          chargement, référentiels des guides, recherche
-├── synonymes.py         dictionnaire des synonymes de la recherche CSAR
-├── synonymes_csar.txt   les synonymes livrés, un par ligne (modifiable)
-├── smr_build.py         parsing des sources Excel → base SQLite
-├── lancer_smr.bat/.sh   scripts de lancement (Windows / Linux-macOS)
-├── requirements.txt     dépendances (streamlit, pandas, openpyxl)
-├── data/smr.sqlite      base construite automatiquement (régénérable)
-└── sources/             fichiers sources ATIH, dont gme/ (manuel de groupage)
+smr-dim/
+├── app.py                    coquille Streamlit : navigation et pages de recherche
+├── lancer_smr.bat / .sh      scripts de lancement (Windows / Linux-macOS)
+├── requirements.txt          dépendances (streamlit, pandas, openpyxl)
+├── smr/                      le code de l'application
+│   ├── chemins.py            emplacements : sources/, data/, ~/.dim
+│   ├── etat.py               magasin de session : la saisie survit à la navigation
+│   ├── references.py         page Références : référentiels, arborescences, règles
+│   ├── base/                 les données
+│   │   ├── construction.py   lecture des sources Excel → base SQLite
+│   │   └── donnees.py        chargement, référentiels des guides, recherche
+│   ├── synonymes/            la recherche CSAR en langage courant
+│   │   ├── synonymes.py      lecture du dictionnaire, développement des requêtes
+│   │   └── synonymes_csar.txt  les synonymes livrés, un par ligne (modifiable)
+│   ├── actes/                autour d'un acte
+│   │   ├── fiches.py         fiches d'acte et composeurs de zone d'acte
+│   │   ├── panier.py         panier d'actes : contrôles, pondérations, scores
+│   │   └── favoris.py        favoris : étoile des fiches, page Favoris, stockage
+│   └── sejour/               le séjour, du diagnostic au montant
+│       ├── groupage.py       CM → GN → GR → GL → sévérité
+│       └── valorisation.py   page Séjour & valorisation : GME → GMT → montant
+├── sources/                  fichiers sources de l'ATIH, à déposer
+└── data/smr.sqlite           base construite automatiquement (régénérable)
 ```
 
 La base `data/smr.sqlite` est entièrement régénérable à partir de `sources/` :
@@ -305,10 +311,12 @@ JSON de la page **Favoris**. Un fichier rendu illisible par une retouche
 manuelle n'est jamais écrasé : il est mis de côté sous un nom horodaté
 (`smr_favoris.json.illisible-AAAAMMJJ-HHMMSS`).
 
-Pour reconstruire la base sans lancer l'application :
+Pour reconstruire la base sans lancer l'application, depuis le dossier du
+projet :
 
 ```bash
-.venv/Scripts/python.exe smr_build.py
+.venv/Scripts/python.exe -m smr.base.construction      # Windows
+.venv/bin/python -m smr.base.construction              # Linux / macOS
 ```
 
 ## Périmètre et évolutions prévues

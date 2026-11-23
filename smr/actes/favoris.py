@@ -30,14 +30,14 @@ import zlib
 import pandas as pd
 import streamlit as st
 
-import panier
-import smr_data as sd
-import smr_etat as etat
+from smr import chemins, etat
+from smr.actes import panier
+from smr.base import donnees as sd
 
 # Les outils du DIM (SMR, CCAM…) partagent un seul dossier dans le répertoire
-# personnel, ~/.dim, où chacun range ses fichiers sous un nom préfixé.
-DOSSIER_FAVORIS = os.path.join(os.path.expanduser("~"), ".dim")
-FICHIER_FAVORIS = os.path.join(DOSSIER_FAVORIS, "smr_favoris.json")
+# personnel, ~/.dim, où chacun range ses fichiers sous un nom préfixé (voir
+# smr/chemins.py).
+FICHIER_FAVORIS = chemins.FICHIER_FAVORIS
 
 NOMENCLATURES = {"csarr": "CSARR", "csar": "CSAR", "ccam": "CCAM"}
 
@@ -511,7 +511,7 @@ def _fiche_choisie(favoris, visibles, libelle):
 def _fiche(d, nomenclature, code):
     # fiches importe favoris pour son étoile : l'import est local pour ne pas
     # boucler.
-    import fiches
+    from smr.actes import fiches
 
     if nomenclature == "ccam":
         if code in d.get("lib_ccam", {}):

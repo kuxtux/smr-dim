@@ -12,7 +12,8 @@ PLUS, le mot saisi restant toujours cherché tel quel.
 Deux fichiers texte, lus à chaque recherche (une modification prend effet
 sans relancer l'application ni reconstruire la base) :
 
-- ``synonymes_csar.txt``, livré avec l'outil et remplacé à chaque mise à jour ;
+- ``synonymes_csar.txt``, rangé à côté de ce module, livré avec l'outil et
+  remplacé à chaque mise à jour ;
 - ``~/.dim/smr_synonymes_csar.txt``, personnel et facultatif, qui s'y ajoute.
   Rangé hors du dossier du projet, comme les favoris, il survit au
   remplacement complet de l'application.
@@ -33,12 +34,12 @@ Ce module ne dépend pas de Streamlit : il se teste seul.
 import os
 import re
 
-from smr_build import RACINE, normaliser
+from smr import chemins
+from smr.base.construction import normaliser
 
-FICHIER = os.path.join(RACINE, "synonymes_csar.txt")
+FICHIER = chemins.FICHIER_SYNONYMES
 # Même dossier personnel que les favoris, commun aux outils du DIM.
-FICHIER_PERSO = os.path.join(os.path.expanduser("~"), ".dim",
-                             "smr_synonymes_csar.txt")
+FICHIER_PERSO = chemins.FICHIER_SYNONYMES_PERSO
 
 # Petits mots sans valeur de recherche. Les exiger fait échouer « rééducation
 # du périnée » sur un libellé qui écrit « des fonctions périnéales ». « avec »

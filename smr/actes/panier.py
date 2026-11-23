@@ -7,7 +7,7 @@ d'un même dossier, qu'ils viennent d'une fiche (bouton « Ajouter au panier »)
 d'un collage de lignes déjà codées, les contrôle au regard des tables ATIH et en
 calcule les scores de réadaptation.
 
-Son contenu vit dans le magasin de session (voir smr_etat) : il survit à la
+Son contenu vit dans le magasin de session (voir smr/etat.py) : il survit à la
 navigation entre les pages, et servira d'entrée au futur générateur de GME.
 """
 
@@ -16,10 +16,10 @@ import re
 import pandas as pd
 import streamlit as st
 
-import smr_data as sd
-import smr_etat as etat
-from smr_data import (MOD_AVEC_NIVEAU, MOD_LIEU_CSAR, MOD_LIEU_CSARR,
-                      MOD_PATIENT_CSARR, MOD_TECHNICITE, MOD_TEMPS)
+from smr import etat
+from smr.base import donnees as sd
+from smr.base.donnees import (MOD_AVEC_NIVEAU, MOD_LIEU_CSAR, MOD_LIEU_CSARR,
+                              MOD_PATIENT_CSARR, MOD_TECHNICITE, MOD_TEMPS)
 
 # Journées de présence proposées tant que la page « Séjour & valorisation »
 # n'a rien saisi : elles bornent aussi le dénominateur des scores par jour.
@@ -634,7 +634,7 @@ def _panneau_edition(d, lignes, identifiant):
         return
 
     # fiches importe déjà panier : l'import est local pour ne pas boucler.
-    import fiches
+    from smr.actes import fiches
 
     edition = dict(ligne)
     edition["id"] = identifiant

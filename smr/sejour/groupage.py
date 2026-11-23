@@ -18,7 +18,7 @@ retenu ou écarté. C'est ce dont un médecin DIM a besoin pour contrôler un
 groupage, bien plus que du seul code final.
 
 Références : manuel de groupage GME 2026, volume 1 § 2.2, et les classeurs
-``CIM_infos_SMR.xlsx`` et ``GN_liste_tests.xlsx`` de ``sources/gme/CM et GN/``.
+``CIM_infos_SMR.xlsx`` et ``GN_liste_tests.xlsx``, à déposer dans ``sources/``.
 """
 
 import re

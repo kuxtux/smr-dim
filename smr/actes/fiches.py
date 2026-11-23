@@ -10,14 +10,13 @@ assemble une zone d'acte complète en contrôlant les associations permises.
 import pandas as pd
 import streamlit as st
 
-import favoris
-import panier
-import smr_data as sd
-import smr_etat as etat
-from smr_data import (ETAPES_APPAREILLAGE, MOD_AVEC_NIVEAU, MOD_LIEU_CSAR,
-                      MOD_LIEU_CSARR, MOD_PATIENT_CSARR, MOD_TECHNICITE,
-                      MOD_TEMPS, STATUTS_POND, TYPES_CSARR_POND, badge,
-                      lien_acte, puces)
+from smr import etat
+from smr.actes import favoris, panier
+from smr.base import donnees as sd
+from smr.base.donnees import (ETAPES_APPAREILLAGE, MOD_AVEC_NIVEAU,
+                              MOD_LIEU_CSAR, MOD_LIEU_CSARR, MOD_PATIENT_CSARR,
+                              MOD_TECHNICITE, MOD_TEMPS, STATUTS_POND,
+                              TYPES_CSARR_POND, badge, lien_acte, puces)
 
 VIDE = "— aucun —"
 

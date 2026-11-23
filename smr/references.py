@@ -8,10 +8,10 @@ import re
 import pandas as pd
 import streamlit as st
 
-import groupage
-import smr_data as sd
-import smr_etat as etat
-from smr_data import CHAPITRES_CSAR, MOD_AVEC_NIVEAU, TYPES_CSAR
+from smr import etat
+from smr.base import donnees as sd
+from smr.base.donnees import CHAPITRES_CSAR, MOD_AVEC_NIVEAU, TYPES_CSAR
+from smr.sejour import groupage
 
 REGLES = [
     ("Principes de codage — communs au CSARR et au CSAR", [
@@ -680,16 +680,15 @@ def _sources(d):
             % (meta.get("version_transcodage", ""), div,
                meta.get("version_csar", "")))
     st.markdown(
-        "**Documents de référence** (dossier `sources/`)\n"
-        "- Guide de codage du CSAR, version n°1 2026 — ATIH\n"
+        "**Documents de référence**, publiés par l'ATIH\n"
+        "- Guide de codage du CSAR, version n°1 2026\n"
         "- CSARR 2026, guide de lecture et de codage + partie analytique — "
-        "ATIH, publié au Bulletin officiel\n"
+        "publié au Bulletin officiel\n"
         "- Guide méthodologique SMR 2026 (chapitre IV § 3 : actes de "
-        "réadaptation) — ATIH\n"
-        "- Manuel de groupage GME 2026, volumes 1 à 3 — ATIH "
-        "(dossier `sources/gme/`)\n"
+        "réadaptation)\n"
+        "- Manuel de groupage GME 2026, volumes 1 à 3\n"
         "- Fichiers de pondération des actes, listes d'actes spécialisés et "
-        "seuils des groupes de réadaptation — ATIH\n\n"
+        "seuils des groupes de réadaptation\n\n"
         "**Avertissement** : outil d'aide au codage et à la lecture des "
         "catalogues. En cas de divergence, seuls font foi les documents "
         "officiels de l'ATIH et les textes publiés au Journal officiel ou au "

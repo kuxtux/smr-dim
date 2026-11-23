@@ -11,7 +11,7 @@ toucher au code. Lors d'un changement de version, il suffit de déposer les
 nouveaux fichiers ; si plusieurs versions coexistent, la plus récente est
 retenue.
 
-Usage :  python smr_build.py
+Usage, depuis la racine du projet :  python -m smr.base.construction
 """
 
 import glob
@@ -22,10 +22,7 @@ import unicodedata
 
 import pandas as pd
 
-RACINE = os.path.dirname(os.path.abspath(__file__))
-DOSSIER_SOURCES = os.path.join(RACINE, "sources")
-DOSSIER_DATA = os.path.join(RACINE, "data")
-BASE_SQLITE = os.path.join(DOSSIER_DATA, "smr.sqlite")
+from smr.chemins import BASE_SQLITE, DOSSIER_DATA, DOSSIER_SOURCES, RACINE
 
 # Motifs de recherche des fichiers sources : de simples motifs de NOM, cherchés
 # récursivement dans sources/. Le rangement du dossier est donc libre — on peut

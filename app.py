@@ -5,21 +5,16 @@ PMSI SMR — recherche des actes de réadaptation CSARR et CSAR.
 Lancement :  streamlit run app.py
 """
 
-import os
-
 import pandas as pd
 import streamlit as st
 
-import favoris
-import fiches
-import panier
-import references
-import smr_data as sd
-import smr_etat as etat
-import synonymes
-import valorisation
-from smr_data import (CHAPITRES_CSAR, P_CSAR, P_CSARR, P_FAV, P_REF, P_VALO,
-                      PAGES, TYPES_CSAR)
+from smr import chemins, etat, references
+from smr.actes import favoris, fiches, panier
+from smr.base import donnees as sd
+from smr.base.donnees import (CHAPITRES_CSAR, P_CSAR, P_CSARR, P_FAV, P_REF,
+                              P_VALO, PAGES, TYPES_CSAR)
+from smr.sejour import valorisation
+from smr.synonymes import synonymes
 
 st.set_page_config(
     page_title="PMSI SMR",
@@ -149,7 +144,7 @@ def _onglet_recherche(d, nomen, filtres):
                 "celui du catalogue : vous pouvez l'ajouter au dictionnaire "
                 "des synonymes, le fichier `%s` (ou votre fichier personnel "
                 "`%s`). L'ajout est pris en compte dès la recherche suivante."
-                % (os.path.basename(synonymes.FICHIER),
+                % (chemins.relatif(synonymes.FICHIER),
                    synonymes.FICHIER_PERSO))
         return
 
@@ -240,7 +235,7 @@ def _accueil(d, nomen):
             "de synonymes** : `rééduc membre sup`, `bilan équilibre`, "
             "`kiné respi`, `ETP`… Il se consulte et se complète dans le "
             "fichier `%s` du dossier de l'outil."
-            % os.path.basename(synonymes.FICHIER))
+            % chemins.relatif(synonymes.FICHIER))
         st.markdown("**Structure d'un code CSAR à 5 caractères**")
         st.markdown(
             "- `01` à `11` : chapitre — la fonction concernée\n"
@@ -281,8 +276,8 @@ def _onglet_specialises(d, nomen):
     ref_gn = d.get("ref_gn")
     if ref_gn is None or ref_gn.empty:
         st.warning("Les listes d'actes spécialisés ne sont pas chargées : "
-                   "vérifiez la présence de `sources/gme/GR/"
-                   "ACTES_listes_SPE.xlsx`.")
+                   "vérifiez la présence de `ACTES_listes_SPE.xlsx` dans "
+                   "`sources/`.")
         return
 
     st.markdown(

@@ -14,9 +14,10 @@ import sqlite3
 import pandas as pd
 import streamlit as st
 
-import smr_build
-import synonymes
-from smr_build import BASE_SQLITE, CHAPITRES_CSAR, TYPES_CSAR, normaliser
+from smr.base import construction
+from smr.base.construction import CHAPITRES_CSAR, TYPES_CSAR, normaliser
+from smr.chemins import BASE_SQLITE
+from smr.synonymes import synonymes
 
 # ---------------------------------------------------------------------------
 # Constantes de navigation
@@ -140,7 +141,7 @@ AIDE = {
 def charger():
     """Charge (et construit au besoin) la base locale. Renvoie un dict."""
     if not os.path.exists(BASE_SQLITE):
-        smr_build.construire(verbose=False)
+        construction.construire(verbose=False)
     con = sqlite3.connect(BASE_SQLITE)
     tables = [r[0] for r in con.execute(
         "SELECT name FROM sqlite_master WHERE type='table'")]
@@ -324,7 +325,7 @@ def _plein_texte_csar(df, requete, dans_notes):
     """Recherche par mots dans le CSAR, synonymes du dictionnaire compris.
 
     Chaque mot saisi est cherché tel quel OU par l'un de ses synonymes (voir
-    ``synonymes.py``) ; tous les mots doivent être satisfaits. Les actes
+    ``smr/synonymes/synonymes.py``) ; tous les mots doivent être satisfaits. Les actes
     trouvés sans l'aide du dictionnaire sont classés les premiers, puis ceux
     qui répondent aux possibilités écrites en tête dans le dictionnaire : leur
     ordre y vaut priorité. La colonne

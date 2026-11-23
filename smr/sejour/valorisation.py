@@ -22,17 +22,17 @@ le quotient recalculé : d'où de légers écarts, de l'ordre de quelques euros
 sur un séjour très long, avec un calcul qui recalculerait ``TZF1 / 7``.
 
 Règles : arrêté du 4 décembre 2023 (classification et prise en charge des
-prestations) et arrêté du 12 janvier 2026 (tarifs), dont les annexes sont
-déposées dans ``sources/gmt/``.
+prestations) et arrêté du 12 janvier 2026 (tarifs), dont les annexes sont à
+déposer dans ``sources/``.
 """
 
 import pandas as pd
 import streamlit as st
 
-import groupage
-import panier
-import smr_data as sd
-import smr_etat as etat
+from smr import etat
+from smr.actes import panier
+from smr.base import donnees as sd
+from smr.sejour import groupage
 
 # Catégorie de l'établissement pour lequel l'outil est paramétré : le a de
 # l'article L.162-22 du code de la sécurité sociale (établissement public de
@@ -440,7 +440,7 @@ def page(d):
 
     if d.get("tarifs_gmt") is None or d["tarifs_gmt"].empty:
         st.warning("La grille tarifaire n'est pas chargée : déposez les "
-                   "annexes de l'arrêté tarifaire dans `sources/gmt/`.")
+                   "annexes de l'arrêté tarifaire dans `sources/`.")
         return
 
     morbidite = _section_morbidite(d)
