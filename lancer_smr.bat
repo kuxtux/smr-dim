@@ -11,9 +11,12 @@ if not exist ".venv\Scripts\python.exe" (
     python -m venv .venv
     if errorlevel 1 (
         echo.
-        echo ERREUR : Python est introuvable. Installez Python 3.10+
+        echo ERREUR : Python est introuvable.
+        echo Installez Python depuis le Microsoft Store : application Python
+        echo de la Python Software Foundation, version la plus recente,
+        echo 3.10 au minimum. Si le Store est bloque sur ce poste, installez-le
         echo depuis https://www.python.org/downloads/ en cochant
-        echo "Add python.exe to PATH", puis relancez ce script.
+        echo "Add python.exe to PATH". Relancez ensuite ce script.
         pause
         exit /b 1
     )

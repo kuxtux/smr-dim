@@ -7,7 +7,6 @@ guides ATIH (règles de codage, listes fermées) et les fonctions de
 recherche utilisées par les pages CSARR et CSAR.
 """
 
-import os
 import re
 import sqlite3
 
@@ -139,8 +138,12 @@ AIDE = {
 
 @st.cache_data(show_spinner="Construction de la base SMR…")
 def charger():
-    """Charge (et construit au besoin) la base locale. Renvoie un dict."""
-    if not os.path.exists(BASE_SQLITE):
+    """Charge (et construit au besoin) la base locale. Renvoie un dict.
+
+    La base est construite si elle manque, ou reconstruite si elle a été
+    produite par une autre version de l'outil (voir construction.base_a_jour).
+    """
+    if not construction.base_a_jour():
         construction.construire(verbose=False)
     con = sqlite3.connect(BASE_SQLITE)
     tables = [r[0] for r in con.execute(

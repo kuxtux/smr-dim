@@ -8,6 +8,7 @@ Lancement :  streamlit run app.py
 import pandas as pd
 import streamlit as st
 
+import smr
 from smr import chemins, etat, references
 from smr.actes import favoris, fiches, panier
 from smr.base import construction
@@ -500,6 +501,9 @@ def _barre_laterale(d):
                % d["meta"].get("nb_actes_csar", ""))
     st.caption("CSARR 2026 · %s actes" % d["meta"].get("nb_actes_csarr", ""))
     st.caption("Sources ATIH — voir Références › Sources")
+    # À citer en signalant un problème : c'est la version de l'outil, celle
+    # des releases sur GitHub.
+    st.caption("smr-dim version %s" % smr.__version__)
     return page, filtres, emplacement_historique
 
 

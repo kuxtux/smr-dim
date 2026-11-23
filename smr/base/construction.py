@@ -23,6 +23,7 @@ import unicodedata
 
 import pandas as pd
 
+from smr import __version__ as VERSION_OUTIL
 from smr.chemins import (BASE_SQLITE, DOSSIER_DATA, DOSSIER_SOURCES, RACINE,
                          relatif)
 
@@ -1011,6 +1012,28 @@ def lire_gr():
 # Construction de la base
 # ---------------------------------------------------------------------------
 
+def base_a_jour():
+    """La base existe et a été construite par cette version de l'outil.
+
+    Après une mise à jour, une base produite par une version antérieure
+    pourrait ne plus correspondre au code qui la lit : elle est alors
+    reconstruite, même si le nouvel outil a été dézippé par-dessus l'ancien.
+    """
+    if not os.path.exists(BASE_SQLITE):
+        return False
+    try:
+        con = sqlite3.connect(BASE_SQLITE)
+        try:
+            ligne = con.execute(
+                "SELECT valeur FROM meta WHERE cle = 'version_outil'"
+            ).fetchone()
+        finally:
+            con.close()
+    except sqlite3.Error:
+        return False
+    return bool(ligne) and ligne[0] == VERSION_OUTIL
+
+
 def construire(verbose=True):
     def log(msg):
         if verbose:
@@ -1109,6 +1132,7 @@ def construire(verbose=True):
             majoration_indiv="", majoration_coll="")
 
     meta = {
+        "version_outil": VERSION_OUTIL,
         "version_csar": v_csar,
         "version_csar_assoc": os.path.basename(trouver_source("csar_assoc")),
         "version_csarr": v_csarr,

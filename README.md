@@ -239,8 +239,10 @@ dans `sources/`, supprimer `data/smr.sqlite` et relancer.
 
 ## Installation & lancement
 
-1. **Télécharger le code** : sur GitHub, *Code › Download ZIP* puis dézipper,
-   ou `git clone https://github.com/kuxtux/smr-dim.git`.
+1. **Télécharger l'outil** :
+   [`smr-dim.zip`](https://github.com/kuxtux/smr-dim/releases/latest/download/smr-dim.zip),
+   la dernière version publiée, puis le dézipper ; ou
+   `git clone https://github.com/kuxtux/smr-dim.git`.
 2. **Déposer les fichiers de l'ATIH** dans `sources/` (voir la section
    précédente et [`sources/LISEZMOI.md`](sources/LISEZMOI.md)).
 3. **Lancer l'outil**, selon le système (ci-dessous). Au premier lancement,
@@ -248,9 +250,12 @@ dans `sources/`, supprimer `data/smr.sqlite` et relancer.
 
 ### Windows
 
-1. Installer Python 3.10 ou plus récent
-   ([python.org](https://www.python.org/downloads/)) en cochant **« Add
-   python.exe to PATH »**.
+1. Installer Python : ouvrir le **Microsoft Store**, chercher « Python » et
+   installer la version la plus récente publiée par la *Python Software
+   Foundation* (3.10 au minimum). Si le Store est bloqué sur le poste,
+   installer Python depuis [python.org](https://www.python.org/downloads/) en
+   cochant **« Add python.exe to PATH »**, ou s'adresser au service
+   informatique.
 2. Double-cliquer sur **`lancer_smr.bat`** — l'environnement virtuel est créé
    et les dépendances installées automatiquement au premier lancement, puis
    l'application s'ouvre dans le navigateur
@@ -288,6 +293,23 @@ La collecte de statistiques d'usage de Streamlit est désactivée, et
 l'application n'est accessible que depuis le poste qui la lance : ces
 réglages sont dans `.streamlit/config.toml`, à modifier pour partager l'outil
 sur un réseau.
+
+## Mettre à jour l'outil
+
+Les versions sont publiées sur la page
+[Releases](https://github.com/kuxtux/smr-dim/releases), avec ce qu'elles
+apportent ; le numéro de la version installée s'affiche en bas de la colonne
+de gauche de l'application. Il se lit ainsi : l'année de la campagne ATIH, puis
+le numéro de version dans la campagne (`2026.2` apporte une fonctionnalité,
+`2026.1.1` une correction).
+
+Pour passer à une nouvelle version, télécharger le nouveau
+[`smr-dim.zip`](https://github.com/kuxtux/smr-dim/releases/latest/download/smr-dim.zip)
+et le dézipper, puis y recopier le dossier `sources/` de l'ancienne
+installation ; on peut aussi le dézipper par-dessus l'ancienne. Avec
+`git clone`, un `git pull` suffit. Au premier lancement, la base est
+reconstruite automatiquement si elle date d'une autre version. Les favoris et
+les synonymes personnels, rangés dans `~/.dim`, sont conservés.
 
 ## Organisation du projet
 
