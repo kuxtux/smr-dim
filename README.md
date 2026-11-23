@@ -217,10 +217,11 @@ format PDF ne sont pas nécessaires : l'outil ne les lit jamais.
 
 Les fichiers sont détectés **par leur nom**, cherché récursivement dans
 `sources/` : **le rangement du dossier est libre**, et une archive téléchargée
-de l'ATIH s'y dézippe telle quelle. Lors d'un changement de version il suffit
-de déposer les nouveaux fichiers ; si plusieurs versions coexistent, la plus
-récemment modifiée est retenue. Tant qu'il manque un fichier indispensable,
-l'outil affiche la liste de ceux qui manquent au lieu de démarrer.
+de l'ATIH s'y dézippe telle quelle. Lors d'un changement de version, déposer
+les nouveaux fichiers, supprimer `data/smr.sqlite` et relancer ; si plusieurs
+versions coexistent, la plus récemment modifiée est retenue. Tant qu'il manque
+un fichier indispensable, l'outil affiche la liste de ceux qui manquent au lieu
+de démarrer.
 
 Le site de l'ATIH étant en cours de restructuration, les liens de
 téléchargement ne sont pas encore donnés : ils le seront dès qu'il sera
@@ -305,9 +306,9 @@ le numéro de version dans la campagne (`2026.2` apporte une fonctionnalité,
 
 Pour passer à une nouvelle version, télécharger le nouveau
 [`smr-dim.zip`](https://github.com/kuxtux/smr-dim/releases/latest/download/smr-dim.zip)
-et le dézipper, puis y recopier le dossier `sources/` de l'ancienne
-installation ; on peut aussi le dézipper par-dessus l'ancienne. Avec
-`git clone`, un `git pull` suffit. Au premier lancement, la base est
+et le dézipper, puis recopier les fichiers de l'ATIH de l'ancienne
+installation dans le dossier `sources/` de la nouvelle (celui qui est à côté de
+`lancer_smr.bat`). Avec `git clone`, un `git pull` suffit. Au premier lancement, la base est
 reconstruite automatiquement si elle date d'une autre version. Les favoris et
 les synonymes personnels, rangés dans `~/.dim`, sont conservés.
 
