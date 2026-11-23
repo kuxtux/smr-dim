@@ -17,10 +17,10 @@ if not exist ".venv\Scripts\python.exe" (
         pause
         exit /b 1
     )
+    ".venv\Scripts\python.exe" -m pip install --quiet --upgrade pip
 )
 
 echo Verification des dependances...
-".venv\Scripts\python.exe" -m pip install --quiet --upgrade pip
 ".venv\Scripts\python.exe" -m pip install --quiet -r requirements.txt
 
 echo Lancement de PMSI SMR...

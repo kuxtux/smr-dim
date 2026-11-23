@@ -130,7 +130,8 @@ clic sur l'étoile pendant la session.
 **Aucune saisie perdue** : la recherche en cours, les filtres, les composeurs
 de zone d'acte et le panier vivent dans un magasin de session découplé des
 widgets (`smr/etat.py`). On peut aller consulter les Références et revenir :
-tout est là. C'est la fondation du futur générateur de GME.
+tout est là, et la page « Séjour & valorisation » reprend les actes du panier
+pour calculer le groupe de réadaptation.
 
 **Recherche d'un code CIM-10** (page « Séjour & valorisation ») : le
 référentiel chargé est la CIM-10 **complète** de l'ATIH — 42 897 codes, et non
@@ -203,8 +204,12 @@ facultatif.
 |---|---|
 | CSAR — catalogue et fichier associé | `csar_version_*.xlsx`, `fichier_associe_csar_*.xlsx` |
 | CSARR — fichier complémentaire et transcodage | `fichier_complementaire_csarr_*.xlsx`, `Transcodage_CSARR_CSAR*.xlsx` (facultatif) |
-| Manuel de groupage des GME — les 12 tables | `CIM_infos_SMR`, `GN_liste_tests`, `GR_infos`, `GL_infos`, `CMA_exclusion`, `CMA_CCAM`, `TOTAL_listes_groupes`, `ACTES_ponderations_CSARR`, `ACTES_listes_SPE`, `ACTES_ponderations_CSAR_transcodage`, `ACTES_listes_SPE_CSAR_transcodage_*`, `CSAR_infos` (`.xlsx`) |
+| Manuel de groupage des GME — les 12 tables | `CIM_infos_SMR*.xlsx`, `GN_liste_tests*.xlsx`, `GR_infos*.xlsx`, `GL_infos*.xlsx`, `CMA_exclusion*.xlsx`, `CMA_CCAM*.xlsx`, `TOTAL_listes_groupes*.xlsx`, `ACTES_ponderations_CSARR*.xlsx`, `ACTES_listes_SPE.xlsx`, `ACTES_ponderations_CSAR_transcodage*.xlsx`, `ACTES_listes_SPE_CSAR*.xlsx`, `CSAR_infos*.xlsx` |
 | Arrêté tarifaire SMR — annexes | `annexes_arrete_tarifaire_smr_*.xlsx` |
+
+Dans ces motifs, `*` remplace n'importe quelle suite de caractères (date,
+numéro de version) ; seul `ACTES_listes_SPE.xlsx` doit porter exactement ce
+nom.
 
 Le détail — nom exact de chaque fichier en 2026 et ce que l'outil y lit — est
 dans **[`sources/LISEZMOI.md`](sources/LISEZMOI.md)**. Les guides et manuels au
@@ -252,8 +257,16 @@ dans `sources/`, supprimer `data/smr.sqlite` et relancer.
    ([http://localhost:8501](http://localhost:8501)).
 
 > Si le poste passe par un proxy pour l'installation des paquets :
-> `set HTTPS_PROXY=http://proxy:port` avant de lancer le script, ou installer
-> les dépendances depuis un poste connecté et copier le dossier `.venv`.
+> `set HTTPS_PROXY=http://proxy:port` avant de lancer le script. Sans accès à
+> Internet : sur un poste connecté qui a la même version de Python,
+> `python -m pip download -r requirements.txt -d paquets` ; copier le dossier
+> `paquets` dans celui de l'outil ; puis, après un premier lancement qui crée
+> `.venv`, `.venv\Scripts\python.exe -m pip install --no-index --find-links
+> paquets -r requirements.txt`. Un dossier `.venv` ne se copie pas d'un poste
+> à l'autre.
+>
+> En cas d'échec de l'installation (Python trop ancien, installation
+> interrompue), supprimer le dossier `.venv` et relancer : il est recréé.
 
 ### Linux / macOS
 
@@ -271,6 +284,11 @@ python3 -m venv .venv
 .venv/bin/streamlit run app.py
 ```
 
+La collecte de statistiques d'usage de Streamlit est désactivée, et
+l'application n'est accessible que depuis le poste qui la lance : ces
+réglages sont dans `.streamlit/config.toml`, à modifier pour partager l'outil
+sur un réseau.
+
 ## Organisation du projet
 
 ```
@@ -278,6 +296,7 @@ smr-dim/
 ├── app.py                    coquille Streamlit : navigation et pages de recherche
 ├── lancer_smr.bat / .sh      scripts de lancement (Windows / Linux-macOS)
 ├── requirements.txt          dépendances (streamlit, pandas, openpyxl)
+├── .streamlit/config.toml    réglages Streamlit : accès local, sans télémétrie
 ├── smr/                      le code de l'application
 │   ├── chemins.py            emplacements : sources/, data/, ~/.dim
 │   ├── etat.py               magasin de session : la saisie survit à la navigation
@@ -319,11 +338,16 @@ manuelle n'est jamais écrasé : il est mis de côté sous un nom horodaté
 (`smr_favoris.json.illisible-AAAAMMJJ-HHMMSS`).
 
 Pour reconstruire la base sans lancer l'application, depuis le dossier du
-projet :
+projet, sous Windows :
+
+```bat
+.venv\Scripts\python.exe -m smr.base.construction
+```
+
+et sous Linux / macOS :
 
 ```bash
-.venv/Scripts/python.exe -m smr.base.construction      # Windows
-.venv/bin/python -m smr.base.construction              # Linux / macOS
+.venv/bin/python -m smr.base.construction
 ```
 
 ## Périmètre et évolutions prévues
@@ -339,11 +363,12 @@ CM (2 car.) → GN (4) → GR (+1 lettre) → GL (+1 lettre) → sévérité (+1
 soit 16 CM, 92 GN, 392 GR, 745 GL et 1 314 GME. À partir des diagnostics, des
 actes du panier, de l'âge et de la cotation de dépendance, l'outil produit le
 GME à sept caractères puis le montant valorisé, en expliquant chaque étape.
-Toutes les tables du manuel de groupage sont chargées : `CIM_infos_SMR.xlsx`
-(catégories majeures et CMA, 42 897 codes), `GN_liste_tests.xlsx` (arbres de
-décision des GN), `GR_infos.xlsx` (pondérations, actes spécialisés, seuils),
-`GL_infos.xlsx` (lourdeur), `CMA_exclusion.xlsx` et `CMA_CCAM.xlsx`
-(sévérité).
+Les douze tables du manuel de groupage sont chargées, notamment
+`CIM_infos_SMR.xlsx` (catégories majeures et CMA, 42 897 codes),
+`GN_liste_tests.xlsx` (arbres de décision des GN), `GR_infos.xlsx` (groupes
+de réadaptation et seuils de score), `GL_infos.xlsx` (lourdeur),
+`CMA_exclusion.xlsx` et `CMA_CCAM.xlsx` (sévérité) ; les pondérations et les
+listes d'actes spécialisés viennent des fichiers `ACTES_*`.
 
 La **valorisation** est opérationnelle de bout en bout : les tarifs des 1 638
 GMT et la correspondance GME → GMT sont chargés. Le moteur a été contrôlé sur

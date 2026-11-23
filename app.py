@@ -142,11 +142,12 @@ def _onglet_recherche(d, nomen, filtres):
         else:
             st.caption(
                 "Le terme cherché relève peut-être d'un autre vocabulaire que "
-                "celui du catalogue : vous pouvez l'ajouter au dictionnaire "
-                "des synonymes, le fichier `%s` (ou votre fichier personnel "
-                "`%s`). L'ajout est pris en compte dès la recherche suivante."
-                % (chemins.relatif(synonymes.FICHIER),
-                   synonymes.FICHIER_PERSO))
+                "celui du catalogue : vous pouvez l'ajouter à votre "
+                "dictionnaire personnel des synonymes, `%s` (même syntaxe que "
+                "le fichier livré `%s`). L'ajout est pris en compte dès la "
+                "recherche suivante."
+                % (synonymes.FICHIER_PERSO,
+                   chemins.relatif(synonymes.FICHIER)))
         return
 
     n = len(resultats)
@@ -234,9 +235,11 @@ def _accueil(d, nomen):
             "(ex. `drainage lymphatique`). Les mots d'usage courant sont "
             "traduits dans le vocabulaire du catalogue par un **dictionnaire "
             "de synonymes** : `rééduc membre sup`, `bilan équilibre`, "
-            "`kiné respi`, `ETP`… Il se consulte et se complète dans le "
-            "fichier `%s` du dossier de l'outil."
-            % chemins.relatif(synonymes.FICHIER))
+            "`kiné respi`, `ETP`… Il se consulte dans le fichier `%s` du "
+            "dossier de l'outil, remplacé à chaque mise à jour ; vos propres "
+            "ajouts vont dans `%s` (même syntaxe, fichier à créer), qui s'y "
+            "ajoute et survit aux mises à jour."
+            % (chemins.relatif(synonymes.FICHIER), synonymes.FICHIER_PERSO))
         st.markdown("**Structure d'un code CSAR à 5 caractères**")
         st.markdown(
             "- `01` à `11` : chapitre — la fonction concernée\n"
@@ -556,19 +559,21 @@ def _sources_manquantes(cles):
     la base ne peut pas être construite ; on les nomme tous d'un coup.
     """
     st.title("🩺 PMSI SMR — fichiers sources à déposer")
-    n = len(cles)
+    un = len(cles) == 1
     st.error(
         "La base de l'outil se construit à partir de fichiers publiés par "
         "l'ATIH, qui ne sont pas distribués avec le code. **%s** pour la "
-        "construire." % ("1 fichier manque" if n == 1
-                         else "%d fichiers manquent" % n))
+        "construire." % ("1 fichier manque" if un
+                         else "%d fichiers manquent" % len(cles)))
     st.markdown(
-        "Déposez-les dans le dossier `%s`, où vous voulez — sous-dossiers "
-        "compris — en gardant leur nom d'origine : une archive téléchargée "
+        "Déposez-%s dans le dossier `%s`, où vous voulez — sous-dossiers "
+        "compris — en gardant %s nom d'origine : une archive téléchargée "
         "sur le site de l'ATIH se dézippe telle quelle. Cliquez ensuite sur "
         "**Vérifier à nouveau** : la base se construit en quelques secondes. "
         "La liste complète des fichiers attendus figure dans "
-        "`sources/LISEZMOI.md`." % chemins.DOSSIER_SOURCES)
+        "`sources/LISEZMOI.md`."
+        % ("le" if un else "les", chemins.DOSSIER_SOURCES,
+           "son" if un else "leur"))
     st.dataframe(
         pd.DataFrame([{
             "Publication ATIH": construction.DESCRIPTIONS[c][0],
@@ -578,6 +583,19 @@ def _sources_manquantes(cles):
         } for c in cles]),
         width="stretch", hide_index=True)
     # Le clic relance la page, qui retente la construction.
+    st.button("🔄 Vérifier à nouveau", type="primary")
+
+
+def _source_illisible(erreur):
+    """Un fichier porte le nom attendu mais ne peut pas être lu : lequel."""
+    st.title("🩺 PMSI SMR — fichier source à remplacer")
+    st.error(str(erreur))
+    st.markdown(
+        "Le fichier porte le nom attendu, mais son contenu ne correspond pas "
+        "à ce que l'outil sait lire. Remplacez-le dans le dossier `%s`, puis "
+        "cliquez sur **Vérifier à nouveau**. Les fichiers attendus et leur "
+        "provenance sont décrits dans `sources/LISEZMOI.md`."
+        % chemins.DOSSIER_SOURCES)
     st.button("🔄 Vérifier à nouveau", type="primary")
 
 
@@ -602,6 +620,9 @@ def main():
         # Une exception n'est pas mise en cache : dès que les fichiers sont
         # déposés, le run suivant construit la base.
         _sources_manquantes(manque.cles)
+        st.stop()
+    except construction.SourceIllisible as erreur:
+        _source_illisible(erreur)
         st.stop()
 
     # Confirmation d'ajout au panier : en toast, donc visible quel que soit

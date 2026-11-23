@@ -1,0 +1,14 @@
+# Réglages de Streamlit propres à l'outil, lus au lancement depuis le dossier
+# du projet (les lanceurs s'y placent).
+
+[server]
+# Pas d'invite d'adresse e-mail dans la console au premier lancement.
+showEmailPrompt = false
+# Outil local : l'application n'est accessible que depuis ce poste. Pour la
+# partager sur le réseau, supprimer cette ligne (le serveur écoute alors sur
+# toutes les interfaces).
+address = "localhost"
+
+[browser]
+# Aucune statistique d'usage envoyée à Streamlit.
+gatherUsageStats = false

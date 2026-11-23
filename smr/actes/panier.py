@@ -773,7 +773,7 @@ def _bloc_scores(d, lignes, total):
             "liste d'actes spécialisés du groupe nosologique ; le score "
             "**global** les retient tous. Chacun est décliné par séjour et par "
             "jour. La comparaison aux seuils oriente vers le groupe de "
-            "réadaptation — l'outil ne réalise pas le groupage.")
+            "réadaptation, que calcule la page 💶 Séjour & valorisation.")
 
         options = [""] + ref_gn["gn"].tolist()
         gn = etat.choix(

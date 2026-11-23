@@ -410,18 +410,20 @@ def _groupes(d):
     st.subheader("Groupes de réadaptation et seuils de score")
     st.markdown(
         "Le **score de réadaptation** est la somme des pondérations des actes "
-        "CSARR (ou CCAM) réalisés. Il est calculé de deux façons :\n"
+        "CSARR, CSAR (ou CCAM) réalisés. Il est calculé de deux façons :\n"
         "- **score spécialisé** : seuls les actes appartenant à la liste "
         "d'actes spécialisés du groupe nosologique sont comptés ;\n"
         "- **score global** : tous les actes sont comptés.\n\n"
-        "Chaque score est décliné *par séjour* et *par jour* (division par le "
-        "nombre de jours du lundi au vendredi). La comparaison aux seuils du "
-        "groupe nosologique oriente le séjour vers un groupe de réadaptation.")
+        "Chaque score est décliné *par séjour* et *par jour* : en "
+        "hospitalisation complète, on divise par les jours de présence du "
+        "lundi au vendredi ; en temps partiel, par tous les jours de présence "
+        "de la semaine. La comparaison aux seuils du groupe nosologique "
+        "oriente le séjour vers un groupe de réadaptation.")
     st.info(
         "Le panier calcule ces deux scores pour les actes que vous y placez "
-        "(onglet **🧺 Panier**). L'outil ne réalise pas le groupage : la "
-        "génération des GMT puis des GME avec valorisation est prévue dans les "
-        "évolutions ultérieures.")
+        "(onglet **🧺 Panier**). La page **💶 Séjour & valorisation** en "
+        "déduit le groupe de réadaptation, puis le GME complet et son "
+        "montant.")
 
     gr = d["ref_gr"]
     if gr.empty:

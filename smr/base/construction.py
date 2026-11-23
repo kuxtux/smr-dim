@@ -23,7 +23,8 @@ import unicodedata
 
 import pandas as pd
 
-from smr.chemins import BASE_SQLITE, DOSSIER_DATA, DOSSIER_SOURCES, RACINE
+from smr.chemins import (BASE_SQLITE, DOSSIER_DATA, DOSSIER_SOURCES, RACINE,
+                         relatif)
 
 # Motifs de recherche des fichiers sources : de simples motifs de NOM, cherchés
 # récursivement dans sources/. Le rangement du dossier est donc libre — on peut
@@ -202,20 +203,32 @@ def trouver_source(cle, obligatoire=True):
     du dossier est donc libre. Si plusieurs versions coexistent, la plus
     récente est retenue, à date égale la première dans l'ordre alphabétique —
     de sorte que deux exécutions donnent toujours le même résultat.
+
+    Le chemin du dossier est échappé : des crochets dans un dossier parent
+    (« Projets [DIM] ») seraient sinon lus comme un motif, et plus aucun
+    fichier ne serait trouvé.
     """
-    motif = os.path.join(DOSSIER_SOURCES, "**", MOTIFS[cle])
+    motif = os.path.join(glob.escape(DOSSIER_SOURCES), "**", MOTIFS[cle])
     fichiers = [f for f in glob.glob(motif, recursive=True)
                 if os.path.isfile(f)
                 and not os.path.basename(f).startswith("~$")]
     if not fichiers:
         if obligatoire:
-            raise SystemExit(
-                "Fichier source manquant : aucun fichier nommé « %s » dans "
-                "sources/ (ni dans ses sous-dossiers).\nDéposez le fichier "
-                "ATIH correspondant, son emplacement importe peu."
-                % MOTIFS[cle])
+            raise SourcesManquantes([cle])
         return None
     return max(sorted(fichiers, reverse=True), key=os.path.getmtime)
+
+
+class SourceIllisible(Exception):
+    """Fichier source présent sous le nom attendu, mais inexploitable.
+
+    Feuille attendue absente (autre fichier, autre version) ou classeur
+    corrompu (téléchargement incomplet). Le message nomme le fichier en cause,
+    pour qu'on sache lequel remplacer.
+
+    C'est une Exception et non un SystemExit : Streamlit n'intercepte pas
+    SystemExit, et la page restait alors blanche, sans le moindre message.
+    """
 
 
 class SourcesManquantes(Exception):
@@ -245,7 +258,15 @@ def sources_manquantes():
 
 def _lire(chemin, prefixe_feuille, header=0):
     """Lit la 1re feuille dont le nom commence par ``prefixe_feuille``."""
-    with pd.ExcelFile(chemin) as xl:
+    try:
+        xl = pd.ExcelFile(chemin)
+    except Exception as erreur:  # classeur corrompu ou qui n'en est pas un
+        raise SourceIllisible(
+            "Le fichier %s est illisible (%s : %s). Il est sans doute "
+            "corrompu ou incomplet : téléchargez-le de nouveau."
+            % (relatif(chemin), type(erreur).__name__,
+               str(erreur).rstrip(". "))) from erreur
+    with xl:
         cible = None
         attendu = _norm_col(prefixe_feuille)
         for nom in xl.sheet_names:
@@ -253,10 +274,13 @@ def _lire(chemin, prefixe_feuille, header=0):
                 cible = nom
                 break
         if cible is None:
-            raise SystemExit(
-                "Feuille « %s » introuvable dans %s (feuilles : %s)"
-                % (prefixe_feuille, os.path.basename(chemin), xl.sheet_names)
-            )
+            raise SourceIllisible(
+                "Le fichier %s n'a pas la feuille attendue « %s » (feuilles "
+                "trouvées : %s). Ce n'est sans doute pas le bon fichier, ou pas "
+                "la bonne version : remplacez-le par celui de la campagne 2026 "
+                "(voir sources/LISEZMOI.md)."
+                % (relatif(chemin), prefixe_feuille,
+                   ", ".join(xl.sheet_names)))
         df = pd.read_excel(xl, sheet_name=cible, header=header, dtype=str)
     df.columns = [_norm_col(c) for c in df.columns]
     return df.astype(object).map(_s)
@@ -520,7 +544,7 @@ def lire_csarr():
     supprimes = []
     try:
         cs = _lire(f, "codes supprim", header=None)
-    except SystemExit:
+    except SourceIllisible:
         cs = None
     if cs is not None:
         date_s = date_r = ""
@@ -1186,5 +1210,5 @@ def construire(verbose=True):
 if __name__ == "__main__":
     try:
         construire()
-    except SourcesManquantes as manque:
-        raise SystemExit(str(manque))
+    except (SourcesManquantes, SourceIllisible) as erreur:
+        raise SystemExit(str(erreur))
