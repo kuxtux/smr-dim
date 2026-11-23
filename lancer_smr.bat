@@ -11,7 +11,7 @@ if not exist ".venv\Scripts\python.exe" (
     python -m venv .venv
     if errorlevel 1 (
         echo.
-        echo ERREUR : Python est introuvable. Installez Python 3.9+
+        echo ERREUR : Python est introuvable. Installez Python 3.10+
         echo depuis https://www.python.org/downloads/ en cochant
         echo "Add python.exe to PATH", puis relancez ce script.
         pause

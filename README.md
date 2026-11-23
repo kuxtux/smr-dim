@@ -191,37 +191,35 @@ déjà le séjour — de 38 à 4 055 codes selon la CMA, eux-mêmes filtrables. 
 CMA n'ont aucune exclusion et valent donc sévérité 2 sans condition ; les
 actes CCAM ne sont jamais neutralisés.
 
-## Fichiers sources requis (dossier `sources/`)
+## Fichiers sources de l'ATIH, à déposer dans `sources/`
 
-| Fichier | Rôle |
+L'outil construit sa base à partir de **17 fichiers Excel publiés par
+l'ATIH**. Ils **ne sont pas distribués avec le code** : chacun les télécharge
+sur le site de l'ATIH et les dépose dans le dossier `sources/`. Seize sont
+indispensables ; le dix-septième, `Transcodage_CSARR_CSAR*.xlsx`, est
+facultatif.
+
+| Publication de l'ATIH (campagne 2026) | Fichiers attendus |
 |---|---|
-| `csar_version_*.xlsx` | actes CSAR, éligibilité des modulateurs et modalités, table d'aide au codage, intervenants attendus |
-| `fichier_associe_csar_*.xlsx` | définitions, fonctions CIF et descriptions détaillées des actes CSAR |
-| `fichier_complementaire_csarr_*.xlsx` | actes CSARR hiérarchisés, notes, gestes complémentaires, modulateurs, codes supprimés |
-| `Transcodage_CSARR_CSAR*.xlsx` | commentaires de transcodage (facultatif) |
-| `ACTES_ponderations_CSARR*.xlsx` | pondérations CSARR et majorations des modulateurs |
-| `ACTES_ponderations_CSAR_transcodage*.xlsx` | pondérations CSAR |
-| `ACTES_listes_SPE_CSAR*.xlsx` | caractère spécialisé des actes CSAR par regroupement de GN |
-| `GR_infos*.xlsx` | groupes de réadaptation et seuils de score par GN |
-| `ACTES_listes_SPE.xlsx` | actes spécialisés CSARR et CCAM, et dictionnaire des 92 GN |
-| `CSAR_infos*.xlsx` | barème des modulateurs CSAR (pondération du temps, majorations de lieu) |
-| `TOTAL_listes_groupes*.xlsx` | libellés des CM, GN, GR, GL et GME |
-| `annexes_arrete_tarifaire_smr_*.xlsx` | tarifs des GMT (bornes de zone et forfaits), correspondance GME → GMT, coefficients |
-| `CIM_infos_SMR.xlsx` | CIM-10 à usage SMR : orientation en catégorie majeure, positions autorisées, listes de diagnostics |
-| `GN_liste_tests.xlsx` | arbres de décision menant au groupe nosologique |
-| `GL_infos*.xlsx` | table des niveaux de lourdeur par groupe de réadaptation |
-| `CMA_exclusion*.xlsx` | exclusions des complications et morbidités associées |
-| `CMA_CCAM*.xlsx` | actes CCAM valant complication à eux seuls |
+| CSAR — catalogue et fichier associé | `csar_version_*.xlsx`, `fichier_associe_csar_*.xlsx` |
+| CSARR — fichier complémentaire et transcodage | `fichier_complementaire_csarr_*.xlsx`, `Transcodage_CSARR_CSAR*.xlsx` (facultatif) |
+| Manuel de groupage des GME — les 12 tables | `CIM_infos_SMR`, `GN_liste_tests`, `GR_infos`, `GL_infos`, `CMA_exclusion`, `CMA_CCAM`, `TOTAL_listes_groupes`, `ACTES_ponderations_CSARR`, `ACTES_listes_SPE`, `ACTES_ponderations_CSAR_transcodage`, `ACTES_listes_SPE_CSAR_transcodage_*`, `CSAR_infos` (`.xlsx`) |
+| Arrêté tarifaire SMR — annexes | `annexes_arrete_tarifaire_smr_*.xlsx` |
+
+Le détail — nom exact de chaque fichier en 2026 et ce que l'outil y lit — est
+dans **[`sources/LISEZMOI.md`](sources/LISEZMOI.md)**. Les guides et manuels au
+format PDF ne sont pas nécessaires : l'outil ne les lit jamais.
 
 Les fichiers sont détectés **par leur nom**, cherché récursivement dans
-`sources/` : **le rangement du dossier est libre**. On peut le réorganiser
-comme on veut, la construction suit. Lors d'un changement de version il suffit
+`sources/` : **le rangement du dossier est libre**, et une archive téléchargée
+de l'ATIH s'y dézippe telle quelle. Lors d'un changement de version il suffit
 de déposer les nouveaux fichiers ; si plusieurs versions coexistent, la plus
-récente est retenue. Le tableau ci-dessus ne donne donc que les noms attendus,
-pas des emplacements imposés.
+récemment modifiée est retenue. Tant qu'il manque un fichier indispensable,
+l'outil affiche la liste de ceux qui manquent au lieu de démarrer.
 
-Seuls ces fichiers sont lus. Tout le reste de `sources/` — guides et manuels au
-format PDF — est de la documentation, utile au lecteur mais jamais chargée.
+Le site de l'ATIH étant en cours de restructuration, les liens de
+téléchargement ne sont pas encore donnés : ils le seront dès qu'il sera
+stabilisé.
 
 > **Table de transcodage** — c'est la table d'aide au codage (annexe 4) publiée
 > dans `csar_version_*.xlsx` qui fait foi, et non le fichier autonome
@@ -236,12 +234,19 @@ dans `sources/`, supprimer `data/smr.sqlite` et relancer.
 
 ## Installation & lancement
 
+1. **Télécharger le code** : sur GitHub, *Code › Download ZIP* puis dézipper,
+   ou `git clone https://github.com/kuxtux/smr-dim.git`.
+2. **Déposer les fichiers de l'ATIH** dans `sources/` (voir la section
+   précédente et [`sources/LISEZMOI.md`](sources/LISEZMOI.md)).
+3. **Lancer l'outil**, selon le système (ci-dessous). Au premier lancement,
+   la base se construit en quelques secondes.
+
 ### Windows
 
-1. Installer Python 3.9+ ([python.org](https://www.python.org/downloads/)) en
-   cochant **« Add python.exe to PATH »**.
-2. Copier le dossier complet du projet.
-3. Double-cliquer sur **`lancer_smr.bat`** — l'environnement virtuel est créé
+1. Installer Python 3.10 ou plus récent
+   ([python.org](https://www.python.org/downloads/)) en cochant **« Add
+   python.exe to PATH »**.
+2. Double-cliquer sur **`lancer_smr.bat`** — l'environnement virtuel est créé
    et les dépendances installées automatiquement au premier lancement, puis
    l'application s'ouvre dans le navigateur
    ([http://localhost:8501](http://localhost:8501)).
@@ -251,6 +256,8 @@ dans `sources/`, supprimer `data/smr.sqlite` et relancer.
 > les dépendances depuis un poste connecté et copier le dossier `.venv`.
 
 ### Linux / macOS
+
+Python 3.10 ou plus récent, puis :
 
 ```bash
 ./lancer_smr.sh
@@ -288,7 +295,7 @@ smr-dim/
 │   └── sejour/               le séjour, du diagnostic au montant
 │       ├── groupage.py       CM → GN → GR → GL → sévérité
 │       └── valorisation.py   page Séjour & valorisation : GME → GMT → montant
-├── sources/                  fichiers sources de l'ATIH, à déposer
+├── sources/                  fichiers de l'ATIH, à déposer (voir LISEZMOI.md)
 └── data/smr.sqlite           base construite automatiquement (régénérable)
 ```
 
@@ -332,21 +339,26 @@ CM (2 car.) → GN (4) → GR (+1 lettre) → GL (+1 lettre) → sévérité (+1
 soit 16 CM, 92 GN, 392 GR, 745 GL et 1 314 GME. À partir des diagnostics, des
 actes du panier, de l'âge et de la cotation de dépendance, l'outil produit le
 GME à sept caractères puis le montant valorisé, en expliquant chaque étape.
-Toutes les tables de `sources/gme/` sont chargées : `CIM_infos_SMR.xlsx`
+Toutes les tables du manuel de groupage sont chargées : `CIM_infos_SMR.xlsx`
 (catégories majeures et CMA, 42 897 codes), `GN_liste_tests.xlsx` (arbres de
 décision des GN), `GR_infos.xlsx` (pondérations, actes spécialisés, seuils),
 `GL_infos.xlsx` (lourdeur), `CMA_exclusion.xlsx` et `CMA_CCAM.xlsx`
 (sévérité).
 
 La **valorisation** est opérationnelle de bout en bout : les tarifs des 1 638
-GMT et la correspondance GME → GMT sont chargés, et le moteur reproduit
-exactement les cinq cas de contrôle de l'aide-mémoire de valorisation (séjour
-court, zone basse, zone forfaitaire, zone haute, coupure au 90ᵉ jour).
+GMT et la correspondance GME → GMT sont chargés. Le moteur a été contrôlé sur
+cinq cas calculés à la main pour le GME 0109SA1 : séjour court terminé par un
+décès, zone basse, zone forfaitaire, zone haute, coupure au 90ᵉ jour. Il les
+retrouve au centime près, avec une nuance : au-delà du 90ᵉ jour, il applique
+le prix de journée publié par l'arrêté, arrondi au centime, et non le quotient
+TZF1 / 7 recalculé, soit 4 centimes d'écart sur un séjour de 120 jours.
 
 Ce qui reste à faire : les **suppléments** facturables en sus du GMT (ST4,
 ST5, ST6 transport, D15/D16 dialyse péritonéale, et le supplément cancérologie
-ONC de 17 €/jour créé en 2026), et la saisie **semaine par semaine** en temps
-partiel, où chaque semaine produit son propre groupe de réadaptation.
+ONC de 17 €/jour créé en 2026), la saisie **semaine par semaine** en temps
+partiel, où chaque semaine produit son propre groupe de réadaptation, et les
+**liens de téléchargement** des fichiers de l'ATIH, que l'outil pourra aller
+chercher lui-même une fois le site de l'ATIH stabilisé.
 
 Deux points de divergence entre sources sont signalés à l'écran plutôt que
 tranchés en silence. Le dénominateur des scores en temps partiel : le lisez-moi
@@ -367,3 +379,9 @@ Outil d'**aide au codage et à la lecture** des catalogues d'actes de
 réadaptation. En cas de divergence, seuls font foi les documents officiels de
 l'ATIH et les textes publiés au Journal officiel ou au Bulletin officiel Santé
 Protection sociale Solidarité.
+
+## Licence
+
+Le code est distribué sous **licence MIT** : voir [`LICENSE`](LICENSE). Les
+fichiers de l'ATIH que l'outil lit n'en font pas partie : ils ne sont pas
+distribués avec le code, chacun les télécharge à leur source.

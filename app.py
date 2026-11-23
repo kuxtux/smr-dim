@@ -10,6 +10,7 @@ import streamlit as st
 
 from smr import chemins, etat, references
 from smr.actes import favoris, fiches, panier
+from smr.base import construction
 from smr.base import donnees as sd
 from smr.base.donnees import (CHAPITRES_CSAR, P_CSAR, P_CSARR, P_FAV, P_REF,
                               P_VALO, PAGES, TYPES_CSAR)
@@ -544,6 +545,43 @@ def panier_total(d):
 
 
 # ---------------------------------------------------------------------------
+# Premier lancement : fichiers sources de l'ATIH à déposer
+# ---------------------------------------------------------------------------
+
+def _sources_manquantes(cles):
+    """Nomme les fichiers de l'ATIH à déposer, au lieu d'échouer.
+
+    Les fichiers sources ne sont pas distribués avec le code : au premier
+    lancement, chacun dépose les siens dans sources/. Tant qu'il en manque,
+    la base ne peut pas être construite ; on les nomme tous d'un coup.
+    """
+    st.title("🩺 PMSI SMR — fichiers sources à déposer")
+    n = len(cles)
+    st.error(
+        "La base de l'outil se construit à partir de fichiers publiés par "
+        "l'ATIH, qui ne sont pas distribués avec le code. **%s** pour la "
+        "construire." % ("1 fichier manque" if n == 1
+                         else "%d fichiers manquent" % n))
+    st.markdown(
+        "Déposez-les dans le dossier `%s`, où vous voulez — sous-dossiers "
+        "compris — en gardant leur nom d'origine : une archive téléchargée "
+        "sur le site de l'ATIH se dézippe telle quelle. Cliquez ensuite sur "
+        "**Vérifier à nouveau** : la base se construit en quelques secondes. "
+        "La liste complète des fichiers attendus figure dans "
+        "`sources/LISEZMOI.md`." % chemins.DOSSIER_SOURCES)
+    st.dataframe(
+        pd.DataFrame([{
+            "Publication ATIH": construction.DESCRIPTIONS[c][0],
+            "Fichier attendu": construction.MOTIFS[c],
+            "Nom en 2026": construction.DESCRIPTIONS[c][1],
+            "Contenu": construction.DESCRIPTIONS[c][2],
+        } for c in cles]),
+        width="stretch", hide_index=True)
+    # Le clic relance la page, qui retente la construction.
+    st.button("🔄 Vérifier à nouveau", type="primary")
+
+
+# ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------
 
@@ -558,7 +596,13 @@ def main():
         etat.ecrire("actif.%s" % nomen, code)
         st.session_state["page_nav"] = P_CSAR if nomen == "csar" else P_CSARR
 
-    d = sd.charger()
+    try:
+        d = sd.charger()
+    except construction.SourcesManquantes as manque:
+        # Une exception n'est pas mise en cache : dès que les fichiers sont
+        # déposés, le run suivant construit la base.
+        _sources_manquantes(manque.cles)
+        st.stop()
 
     # Confirmation d'ajout au panier : en toast, donc visible quel que soit
     # l'onglet affiché.

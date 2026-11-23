@@ -3,13 +3,14 @@
 PMSI SMR — construction de la base locale des actes de réadaptation.
 
 Lit les fichiers sources de l'ATIH déposés dans ``sources/`` et produit
-``data/smr.sqlite``, entièrement régénérable.
+``data/smr.sqlite``, entièrement régénérable. Ces fichiers ne sont pas
+distribués avec l'outil : chacun dépose les siens (voir ``sources/LISEZMOI.md``).
 
 Les fichiers sont repérés par leur NOM, cherché récursivement dans
 ``sources/`` : le rangement du dossier est libre et peut être réorganisé sans
 toucher au code. Lors d'un changement de version, il suffit de déposer les
-nouveaux fichiers ; si plusieurs versions coexistent, la plus récente est
-retenue.
+nouveaux fichiers ; si plusieurs versions coexistent, la plus récemment
+modifiée est retenue.
 
 Usage, depuis la racine du projet :  python -m smr.base.construction
 """
@@ -50,6 +51,57 @@ MOTIFS = {
     # Libellés de tous les groupes, et tarifs
     "groupes": "TOTAL_listes_groupes*.xlsx",
     "tarifs": "annexes_arrete_tarifaire_smr_*.xlsx",
+}
+
+# Le seul fichier dont la base peut se passer : on n'en reprend que des
+# commentaires (voir construire). Les fonctions de lecture tolèrent l'absence
+# de leur fichier, mais pas l'écriture de la base, qui échoue alors sur une
+# table vide. construire() vérifie donc d'emblée que tous les autres sont là,
+# et les nomme tous s'il en manque.
+FACULTATIFS = frozenset({"transcodage"})
+
+# Les fichiers ne sont pas distribués avec l'outil : chacun dépose les siens
+# dans sources/. Pour l'y aider, la publication de l'ATIH d'où vient chaque
+# fichier, son nom pour la campagne 2026 et ce qu'on y lit (voir aussi
+# sources/LISEZMOI.md, qui reprend ce tableau).
+DESCRIPTIONS = {
+    "csar": ("CSAR", "csar_version_2026_20260119.xlsx",
+             "actes CSAR, modulateurs et modalités, intervenants attendus, "
+             "table d'aide au codage"),
+    "csar_assoc": ("CSAR", "fichier_associe_csar_v2026_surligne_270326_0.xlsx",
+                   "définitions, fonctions CIF et descriptions des actes"),
+    "csarr": ("CSARR", "fichier_complementaire_csarr_2026.xlsx",
+              "actes CSARR, notes, gestes complémentaires, modulateurs, codes "
+              "supprimés"),
+    "transcodage": ("CSARR", "Transcodage_CSARR_CSAR.xlsx",
+                    "commentaires de transcodage (facultatif)"),
+    "pond_csarr": ("Manuel des GME", "ACTES_ponderations_CSARR.xlsx",
+                   "pondérations CSARR et CCAM, majorations des modulateurs"),
+    "pond_csar": ("Manuel des GME", "ACTES_ponderations_CSAR_transcodage.xlsx",
+                  "pondérations CSAR"),
+    "spe_csar": ("Manuel des GME",
+                 "ACTES_listes_SPE_CSAR_transcodage_26012026.xlsx",
+                 "actes CSAR spécialisés par regroupement de GN"),
+    "spe_csarr": ("Manuel des GME", "ACTES_listes_SPE.xlsx",
+                  "actes CSARR et CCAM spécialisés, dictionnaire des 92 GN"),
+    "csar_gme": ("Manuel des GME", "CSAR_infos.xlsx",
+                 "barème des modulateurs CSAR (temps, lieu)"),
+    "gr": ("Manuel des GME", "GR_infos.xlsx",
+           "groupes de réadaptation et seuils de score par GN"),
+    "cim": ("Manuel des GME", "CIM_infos_SMR.xlsx",
+            "CIM-10 à usage SMR : catégories majeures, positions, listes"),
+    "gn_tests": ("Manuel des GME", "GN_liste_tests.xlsx",
+                 "arbres de décision des groupes nosologiques"),
+    "gl": ("Manuel des GME", "GL_infos.xlsx",
+           "niveaux de lourdeur par groupe de réadaptation"),
+    "cma_exclusion": ("Manuel des GME", "CMA_exclusion.xlsx",
+                      "exclusions des complications et morbidités associées"),
+    "cma_ccam": ("Manuel des GME", "CMA_CCAM.xlsx",
+                 "actes CCAM valant complication à eux seuls"),
+    "groupes": ("Manuel des GME", "TOTAL_listes_groupes.xlsx",
+                "libellés des CM, GN, GR, GL et GME"),
+    "tarifs": ("Arrêté tarifaire SMR", "annexes_arrete_tarifaire_smr_2026_0.xlsx",
+               "tarifs des GMT, correspondance GME → GMT, coefficients"),
 }
 
 # Renvoi d'une ligne d'exclusion vers la liste d'un autre code CMA.
@@ -166,6 +218,31 @@ def trouver_source(cle, obligatoire=True):
     return max(sorted(fichiers, reverse=True), key=os.path.getmtime)
 
 
+class SourcesManquantes(Exception):
+    """Fichiers sources indispensables introuvables dans sources/.
+
+    ``cles`` les désigne tous, pour qu'on puisse les déposer en une fois au
+    lieu de les découvrir un par un.
+    """
+
+    def __init__(self, cles):
+        self.cles = list(cles)
+        super().__init__(
+            "%d fichier(s) source(s) manquant(s) dans %s :\n%s\n"
+            "Déposez-les n'importe où dans ce dossier, sous-dossiers compris, "
+            "en gardant leur nom d'origine (voir sources/LISEZMOI.md)."
+            % (len(self.cles), DOSSIER_SOURCES, "\n".join(
+                "  - %-42s %s" % (MOTIFS[c], DESCRIPTIONS[c][0])
+                for c in self.cles)))
+
+
+def sources_manquantes():
+    """Clés des fichiers indispensables introuvables dans sources/."""
+    return [cle for cle in MOTIFS
+            if cle not in FACULTATIFS
+            and trouver_source(cle, obligatoire=False) is None]
+
+
 def _lire(chemin, prefixe_feuille, header=0):
     """Lit la 1re feuille dont le nom commence par ``prefixe_feuille``."""
     with pd.ExcelFile(chemin) as xl:
@@ -180,7 +257,7 @@ def _lire(chemin, prefixe_feuille, header=0):
                 "Feuille « %s » introuvable dans %s (feuilles : %s)"
                 % (prefixe_feuille, os.path.basename(chemin), xl.sheet_names)
             )
-        df = xl.parse(cible, header=header, dtype=str)
+        df = pd.read_excel(xl, sheet_name=cible, header=header, dtype=str)
     df.columns = [_norm_col(c) for c in df.columns]
     return df.astype(object).map(_s)
 
@@ -915,6 +992,10 @@ def construire(verbose=True):
         if verbose:
             print(msg)
 
+    manquantes = sources_manquantes()
+    if manquantes:
+        raise SourcesManquantes(manquantes)
+
     os.makedirs(DOSSIER_DATA, exist_ok=True)
 
     log("Lecture du CSAR (actes, modulateurs, intervenants)…")
@@ -1103,4 +1184,7 @@ def construire(verbose=True):
 
 
 if __name__ == "__main__":
-    construire()
+    try:
+        construire()
+    except SourcesManquantes as manque:
+        raise SystemExit(str(manque))
