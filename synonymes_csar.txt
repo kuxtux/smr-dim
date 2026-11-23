@@ -1,0 +1,157 @@
+# ============================================================================
+#  PMSI SMR — dictionnaire des synonymes de la recherche d'actes CSAR
+# ============================================================================
+#
+#  Une ligne par entrée :
+#
+#      terme saisi, autre terme saisi = terme du catalogue | autre possibilité
+#
+#  - À GAUCHE du signe égal : ce que l'on tape, termes séparés par des virgules.
+#  - À DROITE : ce qu'il faut chercher dans les libellés du CSAR. La barre
+#    verticale sépare plusieurs possibilités, une seule suffit ; les actes
+#    répondant à la première sont classés en tête. Dans une possibilité de
+#    plusieurs mots, tous doivent être présents.
+#  - Le terme de droite peut être un code d'acte :  standing = 07S12
+#  - Accents, majuscules et petits mots (de, du, la, à…) sont ignorés.
+#  - Ce qui suit un # est un commentaire.
+#
+#  Le mot saisi reste toujours cherché tel quel, en plus de ses synonymes. Un
+#  mot d'au moins quatre lettres vaut début de terme : « reeduc » retrouve
+#  « rééducation ». Une abréviation de trois lettres ou moins (MS, MI, FRE)
+#  n'est reconnue qu'en entier.
+#
+#  Ce fichier est REMPLACÉ à chaque mise à jour de l'outil. Vos ajouts
+#  personnels vont dans  ~/.dim/smr_synonymes_csar.txt  (même syntaxe, fichier
+#  à créer) : il s'ajoute à celui-ci et survit aux mises à jour.
+#
+#  Une modification est prise en compte dès la recherche suivante, sans
+#  relancer l'application.
+#
+#  Le dictionnaire traduit du VOCABULAIRE, pas des indications : on n'y trouve
+#  ni diagnostics (AVC, BPCO, prothèse de hanche) ni métiers.
+# ============================================================================
+
+
+# --- Termes généraux --------------------------------------------------------
+rééducation, réhabilitation, rééduquer, revalidation = réadaptation | entrainement | éducation ventilatoire
+bilan, test, examen, évaluer, diagnostic = évaluation
+reconditionnement, réentrainer = réentrainement
+réunion de synthèse, pluridisciplinaire, multidisciplinaire, pluriprofessionnelle = interdisciplinaire
+projet thérapeutique, projet personnalisé, projet de soins = projet de soin
+
+
+# --- 01  Fonctions cérébrales -----------------------------------------------
+cognitif, neuropsychologique, neuropsychologie, neuropsy = cognitives | cognition
+mnésique, amnésie, mémorisation = mémoire
+attentionnel, concentration = attention
+exécutif, dysexécutif, planification = exécutives
+gnosie, agnosie, négligence, héminégligence, perception, perceptif, visuospatial = perceptuelles
+praxie, apraxie, praxique, gestuelle = mouvements complexes
+psychomotricité, psychomoteur = psychomotrices
+orthophonie, orthophonique = langage | communication | voix | parole | déglutition | oralité
+aphasie, dyslexie, lecture, écriture, calcul, dyscalculie = langage
+CAA, communication alternative, pictogramme, synthèse vocale = communication
+psychologie, soutien psychologique, entretien psychologique = psychologique | psychothérapie
+relaxation, sophrologie, art-thérapie, taï-chi, qi gong, médiation animale = psycho-corporelle
+éveil, coma, état végétatif, EVC, EPR, pauci-relationnel = conscience
+
+
+# --- 02  Fonctions sensorielles et douleur ----------------------------------
+vue, vision, visuelle, malvoyant, malvoyance, cécité = visuel | vision
+orthoptie, orthoptique = oculomotrice | basse vision | visuelles
+locomotion = déplacements | marche | fauteuil roulant
+auditif, auditive, surdité, malentendant, ouïe = audition
+vertige, vestibule = vestibulaires
+gustatif, olfactif, olfaction, anosmie, agueusie = goût | odorat
+sensitif, sensitive, hypoesthésie, désensibilisation = sensibilité | sensitivo
+proprioception, proprioceptif = proprioceptive
+antalgique, algie, algologie, antidouleur, hypnose = douleur
+
+
+# --- 03  Voix et parole -----------------------------------------------------
+vocal, vocale, dysphonie, phonation = voix
+dysarthrie, bégaiement, élocution, prononciation = parole
+
+
+# --- 04  Fonctions cardio-vasculaires et respiratoires ----------------------
+cardiaque, cardio, cardiovasculaire, cardiologie, réadaptation cardiaque = effort
+vélo, tapis roulant, cycloergomètre, ergocycle, ergomètre = réentrainement effort
+endurance, cardio-training = aérobie
+test de marche, test de 6 minutes, 6 minutes, TM6, TDM6 = tolérance effort | évaluation marche
+VO2, VO2max = tolérance effort
+respiratoire, respiration, pulmonaire, pneumologie, souffle, ventilation = ventilatoire | inspiratoires | expiratoires | bronches
+kiné respi, kiné respiratoire, kinésithérapie respiratoire, drainage bronchique, toux, expectoration, crachat = désencombrement | ventilatoire
+lymphœdème, lymphedème, œdème, DLM, drainage manuel, pressothérapie = drainage lymphatique
+musculation, force, renforcement, renfo, tonification, gainage = puissance | renforcement musculaire
+
+
+# --- 05  Fonctions digestives et nutrition ----------------------------------
+dysphagie, fausse route, avaler, déglutir = déglutition
+alimentation, repas = alimentaire | diététique | nutritionnelle
+diététicien, diététicienne, dénutrition, régime = diététique | nutritionnelle
+entérale, parentérale, nutrition entérale, nutrition parentérale, gastrostomie = nutrition artificielle
+
+
+# --- 06  Fonctions périnéales -----------------------------------------------
+périnée, urinaire, incontinence, sphincter, sphinctérien, anorectal, pelvien, pelvi-périnéal = périnéales
+
+
+# --- 07  Fonctions de l'appareil locomoteur ---------------------------------
+MS, épaule, coude, poignet, main, doigt, bras, préhension = membre supérieur
+MI, hanche, genou, cheville, pied, jambe, cuisse = membre inférieur
+rachis, rachidien, dos, colonne, colonne vertébrale, vertébral, vertèbre, lombaire, cervical, dorsal, cou, tronc, thorax, cage thoracique, ATM, temporo-mandibulaire, mâchoire = squelette axial
+articulation, ostéoarticulaire, orthopédie, orthopédique, traumatologie, traumato, rhumatologie = ostéo-articulaires
+neurologique, neurologie, neuromoteur, neuromotrice, neuromusculaire, sensitivomoteur, sensori-moteur, paralysie, parésie, spasticité = neuro-sensitivo-motrices
+motricité, moteur = neuro-sensitivo-motrices | psychomotrices | oculomotrice
+déambulation, marcher, périmètre de marche = marche
+chute, équilibration, stabilité = équilibre
+standing, verticalisateur, verticaliser = verticalisation
+électrothérapie, cryothérapie, thermothérapie, hydrothérapie, agent physique, électrostimulation = physiothérapie
+massothérapie, masser = massage
+arthromoteur, mobiliser = mobilisation
+APA, EAPA, activité physique adaptée, gymnastique, gym = activités physiques
+
+
+# --- 08  Peau ---------------------------------------------------------------
+peau, cicatrice, cicatriciel, brûlure, brûlé, escarre, plaie, trophique = cutané
+contention, bandage, compressif = compression
+
+
+# --- 09  Appareillage -------------------------------------------------------
+appareillage, appareil, aide technique = dispositif médical | aide à la vie
+canne, béquille, déambulateur, rollator, cadre de marche, coussin de positionnement, siège coquille = aide à la vie
+attelle, corset, semelle, collier cervical, ceinture lombaire, releveur, orthoplastie = orthèse
+bas de contention, bas compressif, vêtement compressif, manchon = orthèse compression
+amputé, amputation, moignon, emboîture = prothèse
+FR, VPH = fauteuil roulant
+FRM = fauteuil roulant manuel
+FRE = fauteuil roulant électrique
+
+
+# --- 10  Éducation et information -------------------------------------------
+ETP = éducation thérapeutique
+diagnostic éducatif = bilan éducatif
+atelier éducatif, éducation hors programme = activité éducative
+autosondage, sondage, stomie, injection, insuline, autosurveillance, pansement = autosoin
+prévention, préventif = préventive
+famille, proche = entourage | familiale | aidant
+Zarit = fardeau aidant
+
+
+# --- 11  Activité et participation ------------------------------------------
+AVQ, autonomie, indépendance = vie quotidienne | autonomie
+toilette, habillage, hygiène = ABVQ
+cuisine, courses, ménage, téléphone, budget, médicament = AIVQ
+conduite automobile, voiture, automobile, permis de conduire, véhicule = conduite
+simulateur = simulée
+jardinage, bricolage, activité manuelle = loisir
+travail, emploi, métier, reprise du travail, poste de travail = professionnel
+RQTH = réinsertion professionnelle | prestation sociale
+école, scolarité, études = scolaire
+assistante sociale, assistant social, service social = social
+MDPH, AAH, PCH, APA, allocation, aide sociale, droits = prestation sociale
+tutelle, curatelle, sauvegarde de justice, protection juridique = mesure de protection
+EHPAD, USLD, hébergement, institution, institutionnalisation, foyer, maison de retraite = placement | relogement
+VAD, visite à domicile, domicile, habitat, logement, aménagement du domicile, aménagement du logement = lieu de vie
+permission, RAD, week-end thérapeutique = sortie thérapeutique | retour domicile
+socio-esthétique, esthétique, estime de soi, image corporelle = image de soi

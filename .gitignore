@@ -1,0 +1,12 @@
+# environnement local
+.venv/
+__pycache__/
+.claude/
+
+# base construite automatiquement à partir de sources/
+data/
+
+# fichiers sources de l'ATIH : chacun dépose les siens dans sources/, ils ne
+# sont jamais versionnés (voir sources/LISEZMOI.md)
+sources/*
+!sources/LISEZMOI.md

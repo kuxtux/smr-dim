@@ -1,0 +1,28 @@
+@echo off
+REM ============================================================
+REM  PMSI SMR - lancement de l'application (Windows)
+REM  Cree l'environnement virtuel au premier lancement,
+REM  installe les dependances puis ouvre l'application.
+REM ============================================================
+cd /d "%~dp0"
+
+if not exist ".venv\Scripts\python.exe" (
+    echo Creation de l'environnement virtuel...
+    python -m venv .venv
+    if errorlevel 1 (
+        echo.
+        echo ERREUR : Python est introuvable. Installez Python 3.9+
+        echo depuis https://www.python.org/downloads/ en cochant
+        echo "Add python.exe to PATH", puis relancez ce script.
+        pause
+        exit /b 1
+    )
+)
+
+echo Verification des dependances...
+".venv\Scripts\python.exe" -m pip install --quiet --upgrade pip
+".venv\Scripts\python.exe" -m pip install --quiet -r requirements.txt
+
+echo Lancement de PMSI SMR...
+".venv\Scripts\python.exe" -m streamlit run app.py --server.headless false
+pause
